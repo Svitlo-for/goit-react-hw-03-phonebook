@@ -18,15 +18,6 @@ export class App extends Component {
     filter: '',
   };
 
-  // handleSubmit = contactData => {
-  //   contactData.id = nanoid();
-  //   this.setState(prevState => {
-  //     return {
-  //       contacts: [{ ...contactData }, ...prevState.contacts],
-  //     };
-  //   });
-  // };
-
   handleAddContacts = contact => {
     const hasContactDuplicate = this.state.contacts.some(
       ({ name }) => contact.name.toLowerCase() === name.toLowerCase()
@@ -61,14 +52,24 @@ export class App extends Component {
     );
   };
 
+  componentDidMount() {
+    const stringifiedContacts = localStorage.getItem('contacts');
+    const parsedContacts = JSON.parse(stringifiedContacts) ?? [];
+    this.setState({ contacts: parsedContacts });
+  }
+
+  componentDidUpdate = prevState => {
+    if (this.state.contacts !== prevState.contacts) {
+      const stringifiedContacts = JSON.stringify(this.state.contacts);
+      localStorage.setItem('contacts', stringifiedContacts);
+    }
+  };
+
   render() {
     return (
       <StyledFormContainer>
         <h1 className="title">Phonebook</h1>
-        <ContactForm
-          handleAddContacts={this.handleAddContacts}
-          // onSubmit={this.handleSubmit}
-        />
+        <ContactForm handleAddContacts={this.handleAddContacts} />
         <StyledWrapperContacts>
           <h2 className="title">Contacts</h2>
           {this.state.contacts.length !== 0 && (
